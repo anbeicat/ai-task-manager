@@ -2,15 +2,22 @@
  * @Author: anqiao anqiao10@gmail.com
  * @Date: 2026-05-25 22:52:41
  * @LastEditors: anqiao anqiao10@gmail.com
+ * @LastEditTime: 2026-05-25 23:51:13
+ * @description: 
+ * @FilePath: /ai-task-manager/app/(dashboard)/ai/page.tsx
+ */
+/*
+ * @Author: anqiao anqiao10@gmail.com
+ * @Date: 2026-05-25 22:52:41
+ * @LastEditors: anqiao anqiao10@gmail.com
  * @LastEditTime: 2026-05-25 23:24:26
  * @description: 
  * @FilePath: /ai-task-manager/app/ai/page.tsx
  */
-import AppLayout from "@/components/layout/AppLayout";
 
 export default function AIPage() {
     return (
-        <AppLayout>
+        <>
             <div className="mb-8">
                 <h1 className="mb-2 text-3xl font-bold text-gray-900">AI Assistant</h1>
                 <p className="text-gray-600">
@@ -28,6 +35,6 @@ export default function AIPage() {
                     태스크 추천, 한국어 업무 문장 생성 기능을 구현할 예정입니다.
                 </p>
             </section>
-        </AppLayout>
+        </>
     );
 }

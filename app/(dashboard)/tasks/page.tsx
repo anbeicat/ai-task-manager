@@ -6,13 +6,12 @@
  * @description: 
  * @FilePath: /ai-task-manager/app/tasks/page.tsx
  */
-import AppLayout from "@/components/layout/AppLayout";
 import TaskCard from "@/components/task/TaskCard";
 import { tasks } from "@/lib/data";
 
 export default function TasksPage() {
     return (
-        <AppLayout>
+        <>
             <div className="mb-8">
                 <h1 className="mb-2 text-3xl font-bold text-gray-900">Tasks</h1>
                 <p className="text-gray-600">업무 태스크를 관리합니다.</p>
@@ -23,6 +22,6 @@ export default function TasksPage() {
                     <TaskCard key={task.id} task={task} />
                 ))}
             </section>
-        </AppLayout>
+        </>
     );
 }

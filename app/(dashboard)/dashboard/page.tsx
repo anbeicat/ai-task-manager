@@ -1,4 +1,3 @@
-import AppLayout from "@/components/layout/AppLayout";
 import StatCard from "@/components/dashboard/StatCard";
 import { projects, tasks } from "@/lib/data";
 
@@ -13,7 +12,7 @@ export default function DashboardPage() {
     ).length;
 
     return (
-        <AppLayout>
+        <>
             <div className="mb-8">
                 <h1 className="mb-2 text-3xl font-bold text-gray-900">Dashboard</h1>
                 <p className="text-gray-600">
@@ -43,6 +42,6 @@ export default function DashboardPage() {
                     description="진행 중인 프로젝트"
                 />
             </section>
-        </AppLayout>
+        </>
     );
 }

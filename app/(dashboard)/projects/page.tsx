@@ -6,13 +6,12 @@
  * @description: 
  * @FilePath: /ai-task-manager/app/projects/page.tsx
  */
-import AppLayout from "@/components/layout/AppLayout";
 import ProjectCard from "@/components/project/ProjectCard";
 import { projects } from "@/lib/data";
 
 export default function ProjectsPage() {
     return (
-        <AppLayout>
+        <>
             <div className="mb-8">
                 <h1 className="mb-2 text-3xl font-bold text-gray-900">Projects</h1>
                 <p className="text-gray-600">업무 프로젝트를 관리합니다.</p>
@@ -23,6 +22,6 @@ export default function ProjectsPage() {
                     <ProjectCard key={project.id} project={project} />
                 ))}
             </section>
-        </AppLayout>
+        </>
     );
 }
