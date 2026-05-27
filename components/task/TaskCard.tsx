@@ -2,10 +2,11 @@
  * @Author: anqiao anqiao10@gmail.com
  * @Date: 2026-05-25 23:22:48
  * @LastEditors: anqiao anqiao10@gmail.com
- * @LastEditTime: 2026-05-27 15:04:14
+ * @LastEditTime: 2026-05-27 16:03:12
  * @description: 
  * @FilePath: /ai-task-manager/components/task/TaskCard.tsx
  */
+import Badge from "@/components/common/Badge";
 import type { Task } from "@/types/task";
 import {
     getTaskPriorityClassName,
@@ -32,27 +33,19 @@ export default function TaskCard({ task }: TaskCardProps) {
                     </p>
                 </div>
 
-                <span
-                    className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium ${getTaskStatusClassName(
-                        task.status,
-                    )}`}
-                >
+                <Badge className={getTaskStatusClassName(task.status)}>
                     {getTaskStatusLabel(task.status)}
-                </span>
+                </Badge>
             </div>
 
-            <div className="mt-5 flex flex-wrap gap-2 text-xs">
-                <span
-                    className={`rounded-full px-3 py-1 font-medium ${getTaskPriorityClassName(
-                        task.priority,
-                    )}`}
-                >
+            <div className="mt-5 flex flex-wrap gap-2">
+                <Badge className={getTaskPriorityClassName(task.priority)}>
                     우선순위: {getTaskPriorityLabel(task.priority)}
-                </span>
+                </Badge>
 
-                <span className="rounded-full bg-gray-100 px-3 py-1 font-medium text-gray-700">
+                <Badge className="bg-gray-100 text-gray-700">
                     마감일: {task.dueDate}
-                </span>
+                </Badge>
             </div>
         </article>
     );
