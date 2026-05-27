@@ -2,11 +2,11 @@
  * @Author: anqiao anqiao10@gmail.com
  * @Date: 2026-05-25 22:52:23
  * @LastEditors: anqiao anqiao10@gmail.com
- * @LastEditTime: 2026-05-25 23:24:16
+ * @LastEditTime: 2026-05-27 15:08:11
  * @description: 
- * @FilePath: /ai-task-manager/app/tasks/page.tsx
+ * @FilePath: /ai-task-manager/app/(dashboard)/tasks/page.tsx
  */
-import TaskCard from "@/components/task/TaskCard";
+import TaskList from "@/components/task/TaskList";
 import { tasks } from "@/lib/data";
 
 export default function TasksPage() {
@@ -17,11 +17,7 @@ export default function TasksPage() {
                 <p className="text-gray-600">업무 태스크를 관리합니다.</p>
             </div>
 
-            <section className="grid gap-6">
-                {tasks.map((task) => (
-                    <TaskCard key={task.id} task={task} />
-                ))}
-            </section>
+            <TaskList tasks={tasks} />
         </>
     );
 }
