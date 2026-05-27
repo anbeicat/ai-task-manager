@@ -2,7 +2,7 @@
  * @Author: anqiao anqiao10@gmail.com
  * @Date: 2026-05-27 15:05:10
  * @LastEditors: anqiao anqiao10@gmail.com
- * @LastEditTime: 2026-05-27 15:07:42
+ * @LastEditTime: 2026-05-27 16:20:02
  * @description: 
  * @FilePath: /ai-task-manager/components/task/TaskList.tsx
  */
@@ -10,6 +10,7 @@
 
 import { useMemo, useState } from "react";
 import TaskCard from "@/components/task/TaskCard";
+import TaskForm from "@/components/task/TaskForm";
 import type { Task, TaskPriority, TaskStatus } from "@/types/task";
 
 type StatusFilter = TaskStatus | "ALL";
@@ -34,11 +35,16 @@ const priorityOptions: { label: string; value: PriorityFilter }[] = [
 ];
 
 export default function TaskList({ tasks }: TaskListProps) {
+    const [taskItems, setTaskItems] = useState<Task[]>(tasks);
     const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
     const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>("ALL");
 
+    function handleCreateTask(newTask: Task) {
+        setTaskItems((prevTasks) => [newTask, ...prevTasks]);
+    }
+
     const filteredTasks = useMemo(() => {
-        return tasks.filter((task) => {
+        return taskItems.filter((task) => {
             const matchesStatus =
                 statusFilter === "ALL" || task.status === statusFilter;
             const matchesPriority =
@@ -46,14 +52,18 @@ export default function TaskList({ tasks }: TaskListProps) {
 
             return matchesStatus && matchesPriority;
         });
-    }, [tasks, statusFilter, priorityFilter]);
+    }, [taskItems, statusFilter, priorityFilter]);
 
     return (
         <div>
+            <TaskForm onCreateTask={handleCreateTask} />
+
             <div className="mb-6 flex flex-wrap gap-3">
                 <select
                     value={statusFilter}
-                    onChange={(event) => setStatusFilter(event.target.value as StatusFilter)}
+                    onChange={(event) =>
+                        setStatusFilter(event.target.value as StatusFilter)
+                    }
                     className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 outline-none focus:border-blue-500"
                 >
                     {statusOptions.map((option) => (
