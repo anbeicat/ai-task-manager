@@ -2,7 +2,7 @@
  * @Author: anqiao anqiao10@gmail.com
  * @Date: 2026-05-27 16:05:17
  * @LastEditors: anqiao anqiao10@gmail.com
- * @LastEditTime: 2026-05-27 16:05:23
+ * @LastEditTime: 2026-06-03 23:00:41
  * @description: 
  * @FilePath: /ai-task-manager/components/project/ProjectList.tsx
  */
@@ -10,6 +10,7 @@
 
 import { useMemo, useState } from "react";
 import ProjectCard from "@/components/project/ProjectCard";
+import ProjectForm from "@/components/project/ProjectForm";
 import type { Project, ProjectStatus } from "@/types/project";
 
 type ProjectStatusFilter = ProjectStatus | "ALL";
@@ -26,17 +27,64 @@ const projectStatusOptions: { label: string; value: ProjectStatusFilter }[] = [
 ];
 
 export default function ProjectList({ projects }: ProjectListProps) {
-    const [statusFilter, setStatusFilter] =
-        useState<ProjectStatusFilter>("ALL");
+    const [projectItems, setProjectItems] = useState<Project[]>(projects);
+    const [editingProject, setEditingProject] = useState<Project | null>(null);
+    const [statusFilter, setStatusFilter] = useState<ProjectStatusFilter>("ALL");
+
+    function handleCreateProject(newProject: Project) {
+        setProjectItems((prevProjects) => [newProject, ...prevProjects]);
+    }
+
+    function handleEditProject(project: Project) {
+        setEditingProject(project);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function handleUpdateProject(updatedProject: Project) {
+        setProjectItems((prevProjects) =>
+            prevProjects.map((project) =>
+                project.id === updatedProject.id ? updatedProject : project,
+            ),
+        );
+
+        setEditingProject(null);
+    }
+
+    function handleDeleteProject(projectId: string) {
+        const shouldDelete = confirm("정말 이 프로젝트를 삭제하시겠습니까?");
+
+        if (!shouldDelete) {
+            return;
+        }
+
+        setProjectItems((prevProjects) =>
+            prevProjects.filter((project) => project.id !== projectId),
+        );
+
+        if (editingProject?.id === projectId) {
+            setEditingProject(null);
+        }
+    }
+
+    function handleCancelEdit() {
+        setEditingProject(null);
+    }
 
     const filteredProjects = useMemo(() => {
-        return projects.filter((project) => {
+        return projectItems.filter((project) => {
             return statusFilter === "ALL" || project.status === statusFilter;
         });
-    }, [projects, statusFilter]);
+    }, [projectItems, statusFilter]);
 
     return (
         <div>
+            <ProjectForm
+                editingProject={editingProject}
+                onCreateProject={handleCreateProject}
+                onUpdateProject={handleUpdateProject}
+                onCancelEdit={handleCancelEdit}
+            />
+
             <div className="mb-6">
                 <select
                     value={statusFilter}
@@ -56,7 +104,12 @@ export default function ProjectList({ projects }: ProjectListProps) {
             {filteredProjects.length > 0 ? (
                 <section className="grid gap-6 md:grid-cols-2">
                     {filteredProjects.map((project) => (
-                        <ProjectCard key={project.id} project={project} />
+                        <ProjectCard
+                            key={project.id}
+                            project={project}
+                            onEditProject={handleEditProject}
+                            onDeleteProject={handleDeleteProject}
+                        />
                     ))}
                 </section>
             ) : (
