@@ -2,19 +2,22 @@
  * @Author: anqiao anqiao10@gmail.com
  * @Date: 2026-05-27 16:17:22
  * @LastEditors: anqiao anqiao10@gmail.com
- * @LastEditTime: 2026-05-27 16:18:42
+ * @LastEditTime: 2026-06-03 22:14:30
  * @description: 
  * @FilePath: /ai-task-manager/components/task/TaskForm.tsx
  */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Input from "@/components/common/Input";
 import Select from "@/components/common/Select";
 import type { Task, TaskPriority, TaskStatus } from "@/types/task";
 
 interface TaskFormProps {
+    editingTask: Task | null;
     onCreateTask: (task: Task) => void;
+    onUpdateTask: (task: Task) => void;
+    onCancelEdit: () => void;
 }
 
 const statusOptions = [
@@ -29,18 +32,60 @@ const priorityOptions = [
     { label: "높음", value: "HIGH" },
 ];
 
-export default function TaskForm({ onCreateTask }: TaskFormProps) {
+export default function TaskForm({
+    editingTask,
+    onCreateTask,
+    onUpdateTask,
+    onCancelEdit,
+}: TaskFormProps) {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [status, setStatus] = useState<TaskStatus>("TODO");
     const [priority, setPriority] = useState<TaskPriority>("MEDIUM");
     const [dueDate, setDueDate] = useState("");
 
+    const isEditMode = editingTask !== null;
+
+    useEffect(() => {
+        if (!editingTask) {
+            return;
+        }
+
+        setTitle(editingTask.title);
+        setDescription(editingTask.description);
+        setStatus(editingTask.status);
+        setPriority(editingTask.priority);
+        setDueDate(editingTask.dueDate === "미정" ? "" : editingTask.dueDate);
+    }, [editingTask]);
+
+    function resetForm() {
+        setTitle("");
+        setDescription("");
+        setStatus("TODO");
+        setPriority("MEDIUM");
+        setDueDate("");
+    }
+
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
         if (!title.trim()) {
             alert("태스크 제목을 입력해 주세요.");
+            return;
+        }
+
+        if (isEditMode && editingTask) {
+            const updatedTask: Task = {
+                ...editingTask,
+                title: title.trim(),
+                description: description.trim() || "설명이 없습니다.",
+                status,
+                priority,
+                dueDate: dueDate || "미정",
+            };
+
+            onUpdateTask(updatedTask);
+            resetForm();
             return;
         }
 
@@ -56,12 +101,12 @@ export default function TaskForm({ onCreateTask }: TaskFormProps) {
         };
 
         onCreateTask(newTask);
+        resetForm();
+    }
 
-        setTitle("");
-        setDescription("");
-        setStatus("TODO");
-        setPriority("MEDIUM");
-        setDueDate("");
+    function handleCancelEdit() {
+        resetForm();
+        onCancelEdit();
     }
 
     return (
@@ -70,7 +115,7 @@ export default function TaskForm({ onCreateTask }: TaskFormProps) {
             className="mb-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
         >
             <h2 className="mb-5 text-xl font-semibold text-gray-900">
-                새 태스크 추가
+                {isEditMode ? "태스크 수정" : "새 태스크 추가"}
             </h2>
 
             <div className="grid gap-4 md:grid-cols-2">
@@ -117,12 +162,24 @@ export default function TaskForm({ onCreateTask }: TaskFormProps) {
                 />
             </div>
 
-            <button
-                type="submit"
-                className="mt-6 rounded-lg bg-gray-900 px-5 py-3 text-sm font-medium text-white hover:bg-gray-700"
-            >
-                태스크 추가
-            </button>
+            <div className="mt-6 flex gap-3">
+                <button
+                    type="submit"
+                    className="rounded-lg bg-gray-900 px-5 py-3 text-sm font-medium text-white hover:bg-gray-700"
+                >
+                    {isEditMode ? "태스크 수정" : "태스크 추가"}
+                </button>
+
+                {isEditMode && (
+                    <button
+                        type="button"
+                        onClick={handleCancelEdit}
+                        className="rounded-lg border border-gray-300 px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                    >
+                        수정 취소
+                    </button>
+                )}
+            </div>
         </form>
     );
 }

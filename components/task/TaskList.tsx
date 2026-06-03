@@ -2,7 +2,7 @@
  * @Author: anqiao anqiao10@gmail.com
  * @Date: 2026-05-27 15:05:10
  * @LastEditors: anqiao anqiao10@gmail.com
- * @LastEditTime: 2026-05-27 16:20:02
+ * @LastEditTime: 2026-06-03 22:23:26
  * @description: 
  * @FilePath: /ai-task-manager/components/task/TaskList.tsx
  */
@@ -36,11 +36,55 @@ const priorityOptions: { label: string; value: PriorityFilter }[] = [
 
 export default function TaskList({ tasks }: TaskListProps) {
     const [taskItems, setTaskItems] = useState<Task[]>(tasks);
+    const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
     const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>("ALL");
 
     function handleCreateTask(newTask: Task) {
         setTaskItems((prevTasks) => [newTask, ...prevTasks]);
+    }
+
+    function handleCompleteTask(taskId: string) {
+        setTaskItems((prevTasks) =>
+            prevTasks.map((task) =>
+                task.id === taskId ? { ...task, status: "DONE" } : task,
+            ),
+        );
+    }
+
+    function handleEditTask(task: Task) {
+        setEditingTask(task);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function handleUpdateTask(updatedTask: Task) {
+        setTaskItems((prevTasks) =>
+            prevTasks.map((task) =>
+                task.id === updatedTask.id ? updatedTask : task,
+            ),
+        );
+
+        setEditingTask(null);
+    }
+
+    function handleDeleteTask(taskId: string) {
+        const shouldDelete = confirm("정말 이 태스크를 삭제하시겠습니까?");
+
+        if (!shouldDelete) {
+            return;
+        }
+
+        setTaskItems((prevTasks) =>
+            prevTasks.filter((task) => task.id !== taskId),
+        );
+
+        if (editingTask?.id === taskId) {
+            setEditingTask(null);
+        }
+    }
+
+    function handleCancelEdit() {
+        setEditingTask(null);
     }
 
     const filteredTasks = useMemo(() => {
@@ -56,7 +100,12 @@ export default function TaskList({ tasks }: TaskListProps) {
 
     return (
         <div>
-            <TaskForm onCreateTask={handleCreateTask} />
+            <TaskForm
+                editingTask={editingTask}
+                onCreateTask={handleCreateTask}
+                onUpdateTask={handleUpdateTask}
+                onCancelEdit={handleCancelEdit}
+            />
 
             <div className="mb-6 flex flex-wrap gap-3">
                 <select
@@ -91,7 +140,13 @@ export default function TaskList({ tasks }: TaskListProps) {
             {filteredTasks.length > 0 ? (
                 <section className="grid gap-6">
                     {filteredTasks.map((task) => (
-                        <TaskCard key={task.id} task={task} />
+                        <TaskCard
+                            key={task.id}
+                            task={task}
+                            onCompleteTask={handleCompleteTask}
+                            onEditTask={handleEditTask}
+                            onDeleteTask={handleDeleteTask}
+                        />
                     ))}
                 </section>
             ) : (
